@@ -28,6 +28,8 @@ short_path=$2
 
 case "$cmd" in
   start)
+    # get all DLNA directories from database
+    dlnashares_extract
   
     case "$short_path" in
       all)
@@ -38,14 +40,11 @@ case "$cmd" in
     	[ "$short_path" == "" ] && echo "directory not defined" >&2 && exit 1
     	# we extract the path to analyze
          dlna_path=$(dlnashares_get_all_path | egrep "^[0-9]+:/$short_path$")
-      
       ;;
     esac
   
     [ "$dlna_path" == "" ] && echo "bad directory !" >&2 && exit 1
 
-    # get all DLNA directories from database
-    dlnashares_extract
     # we start reindex for each share
     for dp in $(echo $dlna_path)
     do
