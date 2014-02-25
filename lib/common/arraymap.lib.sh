@@ -61,7 +61,7 @@ function array_add
     
     eval $1[$keyid]=$3
     
-   [ "$ARRAY_DEBUG" == "1" ] && echo "debug: $1[$key]=$3"
+   [ "$ARRAY_DEBUG" == "1" ] && echo "debug: $1[$key]=$3" >&2
 }
 
 #
@@ -84,7 +84,7 @@ function array_get
   local ref=$1[$keyid]
   echo ${!ref}
   
-  [ "$ARRAY_DEBUG" == "1" ] && echo "debug:keyid=$keyid $1[$key]=${!ref}"
+  [ "$ARRAY_DEBUG" == "1" ] && echo "debug:keyid=$keyid $1[$key]=${!ref}" >&2
 }
 
 # array_dump [array_name]
