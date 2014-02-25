@@ -58,8 +58,7 @@ function array_add
     else
       keyid=$key
     fi
-    
-    eval $1[$keyid]=$3
+    eval $1[$keyid]=\"$3\"
     
    [ "$ARRAY_DEBUG" == "1" ] && echo "debug: $1[$key]=$3" >&2
 }
