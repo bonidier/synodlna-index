@@ -15,8 +15,20 @@ you can start (re)index one or all your shares (default shares + auto-detected u
  ```
  ipkg install bash
  ```
+
+# installation
+
+  connect to your Synology NAS with "admin" user
+
+  If you want to get latest version from GitHub, just install GIT with IPKG and clone :
+
+  ```
+  ipkg install git
+
+  git clone https://github.com/bonidier/synodlna-index.git synodlna-index
+  ```
  
-# usage
+# Volume configuration
 
 you can override your RAID volume if different of /volume1 :
 
@@ -25,6 +37,8 @@ cp config.sh.dist config.sh
 vi config.sh
 VOLUME_ROOT=...
 ```
+
+# usage
 
 **embedded help**
 ```
