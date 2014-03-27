@@ -12,21 +12,19 @@ you can start (re)index one or all your shares (default shares + auto-detected u
  - IPKG bootstrap (http://forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server%2C_bootstrap%2C_ipkg_etc#What_do_I_need_to_do)
 
  - install bash 3.x
+ - install git (if you want to get this script from github repository)
+ 
  ```
- ipkg install bash
+ ipkg install bash git
  ```
 
 # installation
 
-  connect to your Synology NAS with "admin" user
+under "admin" user :
 
-  If you want to get latest version from GitHub, just install GIT with IPKG and clone :
-
-  ```
-  ipkg install git
-
-  git clone https://github.com/bonidier/synodlna-index.git synodlna-index
-  ```
+```
+git clone https://github.com/bonidier/synodlna-index.git synodlna-index
+```
  
 # Volume configuration
 
