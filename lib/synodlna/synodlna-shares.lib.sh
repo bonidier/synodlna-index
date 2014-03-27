@@ -41,8 +41,8 @@ function dlnashares_extract
   local FILTERED_DLNA_SHARES=index_folder_for_bash.conf
     
   # we remove some lines & characters for an easiest extraction
-  cat $IDX_FOLDER_DLNA | egrep ':|\{' |  tr -d ',:"'  > $FILTERED_DLNA_SHARES
-
+  cat $IDX_FOLDER_DLNA | egrep ':|\{' | tr ':' ' ' |  tr -d ',"\'  > $FILTERED_DLNA_SHARES
+  
   [ "$DEBUG" == "1" ] && echo "** parsing DLNA folders from $IDX_FOLDER_DLNA to arrays :-) **"
   while read key value
   do
