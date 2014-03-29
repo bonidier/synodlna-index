@@ -12,11 +12,21 @@ you can start (re)index one or all your shares (default shares + auto-detected u
  - IPKG bootstrap (http://forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server%2C_bootstrap%2C_ipkg_etc#What_do_I_need_to_do)
 
  - install bash 3.x
- ```
- ipkg install bash
- ```
+ - install git (if you want to get this script from github repository)
  
-# usage
+ ```
+ ipkg install bash git
+ ```
+
+# installation
+
+under "admin" user :
+
+```
+git clone https://github.com/bonidier/synodlna-index.git synodlna-index
+```
+ 
+# Volume configuration
 
 you can override your RAID volume if different of /volume1 :
 
@@ -25,6 +35,8 @@ cp config.sh.dist config.sh
 vi config.sh
 VOLUME_ROOT=...
 ```
+
+# usage
 
 **embedded help**
 ```
