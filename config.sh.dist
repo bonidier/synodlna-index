@@ -1,1 +1,13 @@
+# define your alternative mount point to your volume
 #VOLUME_ROOT=/volume1
+
+### used for development ###
+# debug output about extracted shares
+
+#DEBUG=0
+
+
+# debug for arraymap lib
+# (will display DLNA shares to array conversion)
+
+#ARRAY_DEBUG=0

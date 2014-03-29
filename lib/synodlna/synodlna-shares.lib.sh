@@ -5,6 +5,8 @@
 
 # require arraymap.lib.sh !
 
+BIN_TR=/usr/bin/tr
+
 #
 # return total shares count in variable $nbshare
 # more verbose information if DEBUG=1
@@ -21,27 +23,39 @@ function dlnashares_extract
 
   array_mapset DLNA_default DLNA_path DLNA_name DLNA_music DLNA_photo DLNA_video || exit 1
   
-  #simulate default DLNA shares : 
-  array_add share1 DLNA_path "/photo"
-  array_add share1 DLNA_default true
-  array_add share1 DLNA_photo true
-  array_add share2 DLNA_path "/music"
-  array_add share2 DLNA_default true
-  array_add share2 DLNA_music true
-  array_add share3 DLNA_path "/video"
-  array_add share3 DLNA_video true
-  array_add share3 DLNA_default true
-  
-  # we start from 3, because of default shares count
-  nbshares=3  
-  
   # synology file with all shared folder informations :-)
   local IDX_FOLDER_DLNA=/usr/syno/etc/index_folder.conf
   # temporary for filtered output of original file
   local FILTERED_DLNA_SHARES=index_folder_for_bash.conf
     
   # we remove some lines & characters for an easiest extraction
-  cat $IDX_FOLDER_DLNA | egrep ':|\{' | tr ':' ' ' |  tr -d ',"\'  > $FILTERED_DLNA_SHARES
+  egrep ':|\{' $IDX_FOLDER_DLNA | $BIN_TR ':' ' ' | $BIN_TR -d ',"\' > $FILTERED_DLNA_SHARES
+  
+  # since DSM 5.x : 
+  # detect if default shares are defined  in index_folder file
+  egrep 'path(\s+)/(music|photo|video)$' $FILTERED_DLNA_SHARES &>/dev/null
+  local has_default_shares=$?
+  
+  nbshares=0
+  
+  # before DSM 5.x, photo/video/music shares were missing from index_folder.conf
+  if [ $has_default_shares -ne 0 ]; then
+  
+    #simulate default DLNA shares
+    
+    array_add share1 DLNA_path "/photo"
+    array_add share1 DLNA_default true
+    array_add share1 DLNA_photo true
+    array_add share2 DLNA_path "/music"
+    array_add share2 DLNA_default true
+    array_add share2 DLNA_music true
+    array_add share3 DLNA_path "/video"
+    array_add share3 DLNA_video true
+    array_add share3 DLNA_default true
+  
+    # we start from 3, because of default shares simulation
+    nbshares=3  
+  fi
   
   [ "$DEBUG" == "1" ] && echo "** parsing DLNA folders from $IDX_FOLDER_DLNA to arrays :-) **"
   while read key value
@@ -54,6 +68,7 @@ function dlnashares_extract
   
     case $key in
       music|photo|video|path|name|default)
+        
         [ "$DEBUG" == "1" ] && echo -e "\t$key => $value"
         # we generate array's key for the line
         keymap=DLNA_$key

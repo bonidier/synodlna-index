@@ -45,7 +45,6 @@ function dlna_log
 #
 function dlna_synoindex
 {
-
   local id=$1
   local log_dir=$OLD_PWD/logs
   
@@ -164,8 +163,8 @@ function dlna_synoindex
     
   # back to initial directory
   cd $OLD_PWD
-  # removing  work directories
-  #rm -rf $WORK_DIR
+  # removing work directories
+  rm -rf $WORK_DIR
     
   dlna_log "** end of indexing **"
 
