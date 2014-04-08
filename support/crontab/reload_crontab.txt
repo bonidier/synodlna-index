@@ -1,0 +1,5 @@
+DSM < 5  /usr/syno/sbin/synoservice --restart crond
+
+DSM 5:
+killall -HUP crond
+  

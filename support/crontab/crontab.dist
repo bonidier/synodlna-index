@@ -1,0 +1,2 @@
+46	01	*	*	*	admin	(cd /var/services/homes/admin/script/synology/mediaserver/synodlna-reindex; flock -xn /tmp/synodlna-reindex.lock ./synodlna-reindex.sh start all > out.full.log )
+

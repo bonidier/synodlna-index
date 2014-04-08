@@ -1,0 +1,92 @@
+#!/bin/sh
+
+PID_FILE=/opt/var/run/$(basename $0).pid
+CONF_FILE=/opt/etc/default/synodlna-reindex-inotify
+DEBUG_FILE=/var/tmp/synodlna-reindex.log
+
+if [ -f "$CONF_FILE" ]; then
+  . $CONF_FILE
+fi
+
+if [ -z "$SYNODLNA_PATH" ]; then
+  echo "you should define path to your SynoDLNA installation in $CONF_FILE"
+  exit 1
+fi
+
+PidExists()
+{
+  local pid=$(cat $PID_FILE 2>/dev/null)
+  if [ ! -z "$pid" -a -d "/proc/$pid" ]; then
+    echo "PID exists [pid:$pid]"
+    return 0
+  else
+    echo "bad or empty PID"
+    return 1
+  fi
+}
+
+doStart()
+{
+    PidExists
+    if [ $? -ne 0 ]; then
+      # cannot get su's child PID  :'(
+      #su -l admin -c "$SYNODLNA_PATH/synodlna-reindex-inotify.sh > /var/tmp/synodlna-reindex.log 2>&1 &"
+      $SYNODLNA_PATH/synodlna-reindex-inotify.sh > $DEBUG_FILE 2>&1 &
+      PID=$!
+      echo "PID=$PID"
+      echo $PID > $PID_FILE
+      PidExists
+      if [ $? -eq 0 ]; then
+	echo "started"
+      else
+	echo "something bad happened, check $DEBUG_FILE log"
+      fi
+    else
+      echo "service already started"
+    fi
+
+}
+
+doStop()
+{
+    PidExists
+    if [ $? -eq 0 ]; then
+      kill $(cat $PID_FILE)
+      echo "service stopped:$?"
+      rm "$PID_FILE"
+    else
+      echo "service not started"
+    fi
+}
+
+doStatus()
+{
+    PidExists
+    if [ $? -eq 0 ]; then
+      PID=$(cat $PID_FILE)
+      echo "service started"
+    else
+      echo "status: not started"
+    fi
+
+}
+
+doLog()
+{
+    if [ -f "$DEBUG_FILE" ]; then
+      tail -f $DEBUG_FILE
+    else
+      echo "$DEBUG_FILE does not exists"
+    fi
+}
+
+case "$1" in
+  start)  doStart;;
+  stop)   doStop;;
+  status) doStatus;;
+  log)    doLog;;
+  *)
+    echo "usage: $0 [start|stop|status|log]"
+    exit 1
+    ;;
+esac

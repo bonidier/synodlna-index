@@ -40,6 +40,24 @@ function dlna_log
 } 
 
 #
+# usage: 
+#
+function dlna_synoindex_action_detail
+{
+  local IFS=' '
+  local sidx_mode=$1
+  
+  [ -z "$sidx_mode" ] && return 1
+  
+  local type_synchro="
+-D:Removing obsolete directory
+-d:Removing obsolete file
+-A:Adding new directory
+-a:Adding new file
+"
+  echo $type_synchro | grep "^$sidx_mode:" | cut -d':' -f2
+}  
+#
 # synchronize your DLNA enabled shares content with Database
 # usage: dlna_synoindex $id
 #
@@ -58,8 +76,8 @@ function dlna_synoindex
   
   # create logs directory if needed
   [ ! -d "$log_dir" ] && mkdir "$log_dir"
-  
-  local output_log=$log_dir/reindex.$(echo $dlna_short_path | sed 's/\///').log
+  local share_name=$(echo $dlna_short_path | sed 's/\///')  
+  local output_log=$log_dir/reindex.${share_name}.log
   
   dlna_initlog $output_log
   
@@ -68,7 +86,7 @@ function dlna_synoindex
   
   [ "$content_types" == "" ] && echo "list of enabled files type empty !" >&2 && return 1
   
-  local WORK_DIR=/tmp/mediaindex.$$.$(echo $dlna_short_path | sed 's/\///')
+  local WORK_DIR=/tmp/mediaindex.$$.${share_name}
   
   local dlna_path=${VOLUME_ROOT}$dlna_short_path
   
@@ -127,11 +145,11 @@ function dlna_synoindex
      $BIN_DIFF $f_db_file $f_fs_file | tail -n+3 | grep "^-" | cut -c2- > $f_dif_file_OFF
      
     # main process to synchronize files with Database
-    # format :  [synoindex_option]:[file_src]:[desc]
-    type_synchro[1]="-D:${f_dif_dir_OFF}:Removing obsolete directory"
-    type_synchro[2]="-d:${f_dif_file_OFF}:Removing obsolete file"
-    type_synchro[3]="-A:${f_dif_dir_ON}:Adding new directory"
-    type_synchro[4]="-a:${f_dif_file_ON}:Adding new file"
+    # format :  [synoindex_option]:[file_src]
+    type_synchro[1]="-D:${f_dif_dir_OFF}"
+    type_synchro[2]="-d:${f_dif_file_OFF}"
+    type_synchro[3]="-A:${f_dif_dir_ON}"
+    type_synchro[4]="-a:${f_dif_file_ON}"
     
     local idx=
     local last_idx=${#type_synchro[@]}
@@ -144,16 +162,19 @@ function dlna_synoindex
        # get file_src
        local sidx_diff=$(echo $line | cut -d':' -f2)
        # get a description of current operation
-       local sidx_desc=$(echo $line | cut -d':' -f3)
+       local sidx_desc=$(dlna_synoindex_action_detail $sidx_mode)
        
        echo "> $sidx_desc"
        # ressources to add/remove
        wc -l $sidx_diff
+       local total_files=$(wc -l $sidx_diff | cut -d' ' -f1)
+       local f_count=0
        for i in $($BIN_CAT $sidx_diff)
        do
+         let f_count=$f_count+1
          echo "$BIN_SYNOINDEX $sidx_mode \"$i\"" >> synoindex.$nn.log
          $BIN_SYNOINDEX $sidx_mode "$i" 2>&1 >> synoindex.$nn.log
-         dlna_log "$sidx_desc: $i"
+         dlna_log "$sidx_desc: [$f_count/$total_files] $i"
        done
        
     # end of loop for $idx
@@ -169,3 +190,4 @@ function dlna_synoindex
   dlna_log "** end of indexing **"
 
 }
+
