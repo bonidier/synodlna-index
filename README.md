@@ -53,18 +53,24 @@ this script is build to be runned manually, when you need to synchronize one or 
 ```
 
 **show all your shares**
+
 this option will list default + user defined shares (detected :-) )
+
 ```
 ./synodlna-reindex.sh list
 ```
+
 **reindex all shares**
+
 ```
 ./synodlna-reindex.sh start all
 ```
+
 **reindex one share**
+
 ```
 ./synodlna-reindex.sh start my_share
-
+```
 
 ## crontab
 
@@ -144,7 +150,7 @@ under admin user, you can prefix following command with 'sudo'
 **start the service**
 
 ```
-/opt/etc/init.d/S99synodlna-reindex-inotify [start
+/opt/etc/init.d/S99synodlna-reindex-inotify start
 ```
 
 **show service status**
