@@ -41,7 +41,7 @@ function dlna_inotify_liveupdate
     #debug output about synoindex command 
     echo "$BIN_SYNOINDEX $sidx_mode \"$file_to_index\""
     # execute the synoindex command
-    $BIN_SYNOINDEX $sidx_mode \"$file_to_index\"
+    $BIN_SYNOINDEX $sidx_mode "$file_to_index"
 
     log_message=$(dlna_synoindex_action_detail $sidx_mode)
     echo "log_message:$log_message"
