@@ -141,6 +141,12 @@ you must define your absolute path to your **synodlna-reindex** installation
 SYNODLNA_PATH=/volume1/homes/admin/script/synology/mediaserver/synodlna-reindex
 ```
 
+### others packages
+
+```
+ipkg install mkfifo
+```
+
 ## usage
 
 the service should run as root :
