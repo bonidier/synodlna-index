@@ -7,7 +7,7 @@ IT_ARCHIVE=inotify-tools-3.14.tar.gz
 IT_SRCDIR=inotify-tools-3.14
 IT_PREFIX=/usr/local/inotify-tools
 
-[ -d "$IT_PREFIX" ] && echo "Inotify-Tools seems already installed to $IT_PREFIX" && exit 1
+[ -d "$IT_PREFIX" ] && echo "Inotify-Tools seems already installed to $IT_PREFIX" && exit 0
 
 # binary dependencies management :-)
 NEEDS="gcc make wget sudo"

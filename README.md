@@ -15,21 +15,73 @@ common : each of this scripts will detect defaults + user defined shares
  - SSH access to your Synology NAS
  - IPKG bootstrap (http://forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server%2C_bootstrap%2C_ipkg_etc#What_do_I_need_to_do)
 
- - install bash 3.x
- - install git (if you want to get this script from github repository)
- 
- ```
- ipkg install bash git
- ```
-
 # installation
 
-under "admin" user :
+## sudo management
+
+under "root" user :
+
+ipkg install sudo
+
+**define your admin user sudo**
 
 ```
-git clone https://github.com/bonidier/synodlna-index.git synodlna-index
+visudo
 ```
- 
+
+add:
+
+```
+admin ALL(ALL) ALL
+```
+
+## synodlna dependencies
+
+**under "admin" user**
+
+**get this project**
+
+```
+sudo ipkg install git
+git clone https://github.com/bonidier/synodlna-index.git synodlna-index
+cd synodlna-index
+```
+
+
+**the Makefile simplify the IPKG packages dependencies installation**
+
+```
+make ipkg
+```
+
+**Installer for inotify-tools, required by synodlna-reindex-inotify.sh**
+
+`` 
+make inotify-tools
+```
+
+note: inotify-tools will be installed in path "/usr/local/inotify-tools/"
+
+## prepare init.d service
+
+To start synodlna-reindex-notify.sh on boot :
+
+**auto-install service to /opt/etc/init.d directory**
+
+this will copy service if needed, as the linked configuration file
+
+```
+make service
+```
+
+**edit /opt/etc/default/synodlna-reindex-inotify**
+
+you must define your absolute path to your **synodlna-reindex** installation
+
+```
+SYNODLNA_PATH=/volume1/homes/admin/script/synology/mediaserver/synodlna-reindex
+```
+
 # Volume configuration
 
 you can override your RAID volume if different of /volume1 :
@@ -39,6 +91,7 @@ cp config.sh.dist config.sh
 vi config.sh
 VOLUME_ROOT=...
 ```
+
 # synodlna-reindex.sh 
 
 ## what does it do ?
@@ -78,6 +131,7 @@ if you want to execute this task regulary,
 
 you can find a crontab example + command to reload crond in **support/crontab/**
 
+
 # synodlna-reindex-inotify.sh 
 
 ## what does it do ?
@@ -85,67 +139,6 @@ you can find a crontab example + command to reload crond in **support/crontab/**
 Once you've made a first synchronization of your database with synodlna-reindex.sh,
 
 you can use this service to synchronize each of your added/removed files/directories for each DLNA shared folder
-
-## requirements
-  
-### inotify-tools install
-
-I've made an auto-installer for it :
-
-**first, install some dependencies**
-note : if some deps miss, you'll be notified by the installer
-
-
-As root user :
-
-```
-ipkg install gcc make wget sudo
-```
-
-**define your admin user sudo**
-
-```
-visudo
-```
-
-add:
-
-```
-admin ALL(ALL) ALL
-```
-
-**now, you can install inotify-tools**
-
-As admin user :
-
-```
-sh support/inotify-tools/inotify-tools_installer.sh
-```
-
-note: inotify-tools will be installed in path "/usr/local/inotify-tools/"
-
-### prepare init.d service
-
-To start synodlna-reindex-notify.sh on boot : 
-
-```
-sudo cp support/init.d/S99synodlna-reindex-inotify  /opt/etc/init.d/
-sudo cp support/init.d/conf/synodlna-reindex-inotify  /opt/etc/default/
-```
-
-**Edit /opt/etc/default/synodlna-reindex-inotify**
-
-you must define your absolute path to your **synodlna-reindex** installation
-
-```
-SYNODLNA_PATH=/volume1/homes/admin/script/synology/mediaserver/synodlna-reindex
-```
-
-### others packages
-
-```
-ipkg install mkfifo
-```
 
 ## usage
 
