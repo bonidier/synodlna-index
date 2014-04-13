@@ -21,7 +21,9 @@ common : each of this scripts will detect defaults + user defined shares
 
 under "root" user :
 
+```
 ipkg install sudo
+```
 
 **define your admin user sudo**
 
@@ -56,7 +58,7 @@ make ipkg
 
 **Installer for inotify-tools, required by synodlna-reindex-inotify.sh**
 
-`` 
+```
 make inotify-tools
 ```
 
