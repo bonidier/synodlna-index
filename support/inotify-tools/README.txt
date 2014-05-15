@@ -7,5 +7,5 @@ as root:
 
 add:
 
-admin ALL(ALL) ALL
+admin ALL=(ALL) ALL
 

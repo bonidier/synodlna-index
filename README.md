@@ -12,8 +12,20 @@ common : each of this scripts will detect defaults + user defined shares
 
 # global requirement
 
- - SSH access to your Synology NAS
- - IPKG bootstrap (http://forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server%2C_bootstrap%2C_ipkg_etc#What_do_I_need_to_do)
+**SSH access**
+
+enable SSH access to your Synology NAS under DSM web interface
+
+**IPKG bootstrap**
+
+ forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server%2C_bootstrap%2C_ipkg_etc#Installing_compiled.2Fbinary_programs_using_ipkg
+
+in short :
+
+ - get and exec the XSH file for your CPU
+ - if your DSM is >= 4.x, on the top of  /root/.profile comment PATH lines
+ - reboot your NAS
+ - run "ipkg update" to get packages database
 
 # installation
 
@@ -34,7 +46,7 @@ visudo
 add:
 
 ```
-admin ALL(ALL) ALL
+admin ALL=(ALL) ALL
 ```
 
 ## synodlna dependencies
@@ -53,6 +65,7 @@ cd synodlna-index
 **the Makefile simplify the IPKG packages dependencies installation**
 
 ```
+sudo ipkg install make
 make ipkg
 ```
 
@@ -173,6 +186,7 @@ under admin user, you can prefix following command with 'sudo'
 ```
 
 this option show the debug output log, containing activity on your shares handled by the script
+
 
 # resources
 
