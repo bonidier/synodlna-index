@@ -25,6 +25,11 @@ service:
 	fi
 
 	@ echo "** copying init.d config file **"
+	# create config directory for init.d script if necessary
+	@ if [ ! -d ${OPT_INITD_CONF_DIR} ]; then \
+	  sudo mkdir -v ${OPT_INITD_CONF_DIR}; \
+	fi
+
 	@ if [ ! -f ${OPT_INITD_CONF_DIR}/${OPT_INITD_CONF_FILE} ]; then \
 	  sudo cp -v support/init.d/conf/${OPT_INITD_CONF_FILE} ${OPT_INITD_CONF_DIR}; \
 	else \
