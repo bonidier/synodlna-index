@@ -26,7 +26,7 @@ IT_ONLY_EVENTS="
 -e create
 -e delete
 "
-IT_EXCLUDE="(@eaDir|#recycle)$"
+IT_EXCLUDE="(@eaDir|@eadir|#recycle)$"
 
 # get all DLNA directories from database               
 dlnashares_extract
