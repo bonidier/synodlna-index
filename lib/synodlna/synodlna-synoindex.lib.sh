@@ -116,7 +116,7 @@ function dlna_synoindex
 
      echo -e "\n## Find all directories ##"
      echo "> searching in Filesystem"
-     $BIN_FIND $dlna_path -type d | egrep -iv "$ignore_folder_list" > $f_fs_dir
+     $BIN_FIND $dlna_path -type d | egrep -v "$ignore_folder_list" > $f_fs_dir
      $BIN_SORT $f_fs_dir -o $f_fs_dir
      wc -l $f_fs_dir
      
@@ -128,7 +128,7 @@ function dlna_synoindex
      echo -e "\n## Find all Files and exclude win files ##"
      
      echo "> searching + sorting in Filesystem"
-     $BIN_FIND $dlna_path -type f -o -type l -name '*' | egrep -v '\.(ini|db|sys|zip|ram)$' | egrep -iv "$ignore_folder_list" > $f_fs_file
+     $BIN_FIND $dlna_path -type f -o -type l -name '*' | egrep -v '\.(ini|db|sys|zip|ram)$' | egrep -v "$ignore_folder_list" > $f_fs_file
      $BIN_SORT $f_fs_file -o $f_fs_file
      wc -l $f_fs_file
      
