@@ -167,6 +167,22 @@ under admin user, you can prefix following command with 'sudo'
 /opt/etc/init.d/S99synodlna-reindex-inotify start
 ```
 
+** WARNING : ** Before any action in monitored shares, You should wait for the following inotifywait messages in service's log :
+
+```
+Setting up watches
+Watches established <===============
+```
+
+can take seconds, few minutes, depends of the directories to analyze)
+
+so, just run the service 'log' option to get current activity to be sure
+
+```
+/opt/etc/init.d/S99synodlna-reindex-inotify log
+```
+
+
 **show service status**
 
 ```
