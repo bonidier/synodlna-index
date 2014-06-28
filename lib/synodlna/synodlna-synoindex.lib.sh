@@ -166,21 +166,32 @@ function dlna_synoindex
        # get a description of current operation
        local sidx_desc=$(dlna_synoindex_action_detail $sidx_mode)
        
-       echo "> $sidx_desc"
+       echo -e "\n> $sidx_desc"
        # ressources to add/remove
        wc -l $sidx_diff
        local total_files=$(wc -l $sidx_diff | cut -d' ' -f1)
        local f_count=0
+       local log_message=
+       local msg_length=
+       local biggest_message=1
        for i in $($BIN_CAT $sidx_diff)
        do
          let f_count=$f_count+1
          echo "$BIN_SYNOINDEX $sidx_mode \"$i\"" >> synoindex.$nn.log
          $BIN_SYNOINDEX $sidx_mode "$i" 2>&1 >> synoindex.$nn.log
-         dlna_log "$sidx_desc: [$f_count/$total_files] $i"
+	 log_messages="$sidx_desc: [$f_count/$total_files] $i"
+	 msg_length=${#log_messages}
+         dlna_log "$log_messages"
+	 # empty previous line
+	 [ $msg_length -gt $biggest_message ] && biggest_message=$msg_length
+	 echo -ne "\r"$(printf "%${biggest_message}s")
+
+	 # display current file
+	 echo -ne "\r$log_messages"
+
        done
-       
     # end of loop for $idx
-    done 
+    done
   # end of loop for $content_types
   done
     

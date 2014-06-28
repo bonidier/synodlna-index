@@ -44,10 +44,9 @@ function dlna_inotify_liveupdate
     # remove all useless slashes
     local file_to_index=$($BIN_READLINK -m "${Dir}${File}")
 
-    #debug output about synoindex command 
+    #debug output about file to pass to synoindex
     if [ "$DEBUG" == "1" ]; then 
-      echo "Dir=$Dir | Events=$Events | File=$File"
-      echo "$BIN_SYNOINDEX $sidx_mode \"$file_to_index\""
+      echo "[debug] Dir=$Dir | Events=$Events | File=$File"
     fi
     # execute the synoindex command
     $BIN_SYNOINDEX $sidx_mode "$file_to_index"

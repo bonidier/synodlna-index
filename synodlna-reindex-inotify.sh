@@ -1,6 +1,9 @@
 #!/opt/bin/bash
 
 HERE=$(dirname $0)
+
+[ -f $HERE/config.sh ] && . $HERE/config.sh
+
 . $HERE/lib/common/arraymap.lib.sh
 . $HERE/lib/synodlna/synodlna-shares.lib.sh
 . $HERE/lib/synodlna/synodlna-synoindex.lib.sh
@@ -45,7 +48,8 @@ echo "launching inotifywait...:"
 [ ! -e  "$IT_FIFO" ] && /opt/bin/mkfifo "$IT_FIFO"
 $IT_BIN/inotifywait -rm ${IT_ONLY_EVENTS} ${IT_WATCHDIR} --exclude=${IT_EXCLUDE} --format "%w|%e|%f"  -o ${IT_FIFO} &
 IT_PID=$!
-echo "debug:PID INOTIFY=${IT_PID}"
+echo "PID INOTIFY=${IT_PID}"
+echo "DEBUG : $DEBUG"
 
 dlna_inotify_liveupdate ${IT_FIFO}
  
