@@ -94,44 +94,52 @@ function dlna_synoindex
   [ $? -ne 0 ] && echo "cannot create or access $WORK_DIR" >&2 && return 1
   
   dlna_log "** start indexing **"
+
   
+  # directories from DB
+  local f_db_dir=db.dir
+  # directories from Filesystem
+  local f_fs_dir=fs.dir
+  # files from Filesystem
+  local f_fs_file=fs.file
+  # folders to exclude from Filesystem scan
+  local ignore_folder_list='/@eaDir|/#recycle'
+  
+  export IFS=$'\n'
+
+  echo -e "\n## Find all directories ##"
+  echo "> searching in Filesystem"
+  $BIN_FIND $dlna_path -type d | egrep -v "$ignore_folder_list" > $f_fs_dir
+  $BIN_SORT $f_fs_dir -o $f_fs_dir
+  wc -l $f_fs_dir
+     
+  echo "> searching in DB"
+  $BIN_PGSQL mediaserver admin -tA -c "select path from directory where path like '$dlna_path%'" > $f_db_dir
+  $BIN_SORT $f_db_dir -o $f_db_dir
+  wc -l $f_db_dir
+     
+  echo -e "\n## Find all Files and exclude win files ##"
+     
+  echo "> searching + sorting in Filesystem"
+  $BIN_FIND $dlna_path -type f -o -type l -name '*' | egrep -v '\.(ini|db|sys|zip|ram)$' | egrep -v "$ignore_folder_list" > $f_fs_file
+  $BIN_SORT $f_fs_file -o $f_fs_file
+  wc -l $f_fs_file
+
   # Loop through our array.
   for nn in $content_types
   do
-     export IFS=$'\n'
+#     export IFS=$'\n'
      
      echo -e "\n*** analyze content-type:$nn in $dlna_path ***"
      
      # build variables for temporary files 
-     local f_db_dir=$nn-db.dir
      local f_db_file=$nn-db.file
-     local f_fs_dir=$nn-fs.dir
-     local f_fs_file=$nn-fs.file
+
      local f_dif_dir_ON=$nn-dif-ON.dir
      local f_dif_file_ON=$nn-dif-ON.file
      local f_dif_dir_OFF=$nn-dif-OFF.dir
      local f_dif_file_OFF=$nn-dif-OFF.file
     
-     local ignore_folder_list='/@eaDir|/#recycle'
-
-     echo -e "\n## Find all directories ##"
-     echo "> searching in Filesystem"
-     $BIN_FIND $dlna_path -type d | egrep -v "$ignore_folder_list" > $f_fs_dir
-     $BIN_SORT $f_fs_dir -o $f_fs_dir
-     wc -l $f_fs_dir
-     
-     echo "> searching in DB"
-     $BIN_PGSQL mediaserver admin -tA -c "select path from directory where path like '$dlna_path%'" > $f_db_dir
-     $BIN_SORT $f_db_dir -o $f_db_dir
-     wc -l $f_db_dir
-     
-     echo -e "\n## Find all Files and exclude win files ##"
-     
-     echo "> searching + sorting in Filesystem"
-     $BIN_FIND $dlna_path -type f -o -type l -name '*' | egrep -v '\.(ini|db|sys|zip|ram)$' | egrep -v "$ignore_folder_list" > $f_fs_file
-     $BIN_SORT $f_fs_file -o $f_fs_file
-     wc -l $f_fs_file
-     
      echo "> searching + sorting in DB"
      $BIN_PGSQL mediaserver admin -tA -c "select path from $nn where path like '$dlna_path%'" > $f_db_file
      $BIN_SORT $f_db_file -o $f_db_file
@@ -169,6 +177,7 @@ function dlna_synoindex
        echo -e "\n> $sidx_desc"
        # ressources to add/remove
        wc -l $sidx_diff
+
        local total_files=$(wc -l $sidx_diff | cut -d' ' -f1)
        local f_count=0
        local log_message=
