@@ -28,6 +28,7 @@ IT_ONLY_EVENTS="
 -e move
 -e create
 -e delete
+-e modify
 "
 IT_EXCLUDE="(@eaDir|#recycle)"
 
