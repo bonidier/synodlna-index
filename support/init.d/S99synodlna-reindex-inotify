@@ -35,6 +35,7 @@ doStart()
       PID=$!
       echo "PID=$PID"
       echo $PID > $PID_FILE
+      sleep 1
       PidExists
       if [ $? -eq 0 ]; then
 	echo "started"

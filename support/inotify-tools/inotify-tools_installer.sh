@@ -26,8 +26,24 @@ cd $HERE && \
 /bin/tar xvzf $IT_ARCHIVE && \
 cd $IT_SRCDIR && \
 ./configure --prefix=$IT_PREFIX && \
-make && \
-sudo make install
+make
+ret_make=$?
+
+if [ $ret_make -eq 0 ]; then
+  debug_makecheck=debug_makecheck.log
+  echo "running tests..."
+  make check &> ${debug_makecheck}
+  test_return=$?
+  if [ $test_return -ne 0 ]; then
+    grep -F "Test 'watch_limit' failed: Verification failed" ${debug_makecheck}
+    [ $? -eq 0 ] && read -p "this failed test is acceptable..., press ENTER to continue"
+    sudo make install
+  else
+    echo "something wrong during tests, passing installation... see ${debug_makecheck}"
+  fi
+else
+  sudo make install
+fi
 
 echo -e "\nreturn : $?"
 

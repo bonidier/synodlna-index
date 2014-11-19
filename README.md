@@ -18,7 +18,7 @@ enable SSH access to your Synology NAS under DSM web interface
 
 **IPKG bootstrap**
 
- forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server%2C_bootstrap%2C_ipkg_etc#Installing_compiled.2Fbinary_programs_using_ipkg
+ http://forum.synology.com/wiki/index.php/Overview_on_modifying_the_Synology_Server%2C_bootstrap%2C_ipkg_etc#Installing_compiled.2Fbinary_programs_using_ipkg
 
 in short :
 
@@ -76,6 +76,17 @@ make inotify-tools
 ```
 
 note: inotify-tools will be installed in path "/usr/local/inotify-tools/"
+
+**Known issue with Inotify-Tools**
+
+Inotify-Tools may cause segfault on some Synology NAS,
+
+So a "make test" verification as been added before installing :
+
+- Allow installation if all tests pass
+- Force installation if test 'watch_limit' failed (because no segfault)
+
+see https://github.com/bonidier/synodlna-index/issues/3
 
 ## prepare init.d service
 

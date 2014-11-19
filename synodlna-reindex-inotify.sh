@@ -32,6 +32,8 @@ IT_ONLY_EVENTS="
 "
 IT_EXCLUDE="(@eaDir|#recycle)"
 
+which $IT_BIN/inotifywait || echo "$IT_BIN/inotifywait missing, stop" && exit 1
+
 # get all DLNA directories from database               
 dlnashares_extract
 DLNA_SHARES=$(dlnashares_get_all_path |  cut -d':' -f2)
