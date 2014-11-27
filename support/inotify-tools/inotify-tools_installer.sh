@@ -31,19 +31,19 @@ ret_make=$?
 
 if [ $ret_make -eq 0 ]; then
   debug_makecheck=debug_makecheck.log
-  echo "running tests..."
-  make check &> ${debug_makecheck}
+  echo -e "\nrunning tests..."
+  MALLOC_TRACE=/tmp/inotify-tools-issue-34.log make check &> ${debug_makecheck}
   test_return=$?
   if [ $test_return -ne 0 ]; then
     grep -F "Test 'watch_limit' failed: Verification failed" ${debug_makecheck}
     [ $? -eq 0 ] && read -p "this failed test is acceptable..., press ENTER to continue"
     sudo make install
+    [ $? -eq 0 ] && echo -e "\ninotify-tools successfuly installed !"
   else
-    echo "something wrong during tests, passing installation... see ${debug_makecheck}"
+    echo "Something wrong during tests, passing installation... see ${debug_makecheck}"
+    echo "Here is the MALLOC_TRACE file : $MALLOC_TRACE"
   fi
-else
-  sudo make install
 fi
 
-echo -e "\nreturn : $?"
+echo -e "\nreturn : $ret_make"
 
