@@ -19,31 +19,50 @@ if [ ! -f "$HERE/$IT_ARCHIVE" ]; then
   /usr/bin/wget http://github.com/downloads/rvoicilas/inotify-tools/$IT_ARCHIVE -O $HERE/$IT_ARCHIVE
 fi
 
-# build and install inotify-tools
-
-# the "make install" under sudo to allow install with an alternative user than root
+# build and check inotify-tools
 cd $HERE && \
 /bin/tar xvzf $IT_ARCHIVE && \
 cd $IT_SRCDIR && \
 ./configure --prefix=$IT_PREFIX && \
 make
-ret_make=$?
 
-if [ $ret_make -eq 0 ]; then
+make_return=$?
+
+make_check_return=
+can_install=
+
+if [ $make_return -eq 0 ]; then
+  # build successful, now testing
+
   debug_makecheck=debug_makecheck.log
-  echo -e "\nrunning tests..."
+  echo -e "\nbuild OK, running tests..."
   MALLOC_TRACE=/tmp/inotify-tools-issue-34.log make check &> ${debug_makecheck}
-  test_return=$?
-  if [ $test_return -ne 0 ]; then
-    grep -F "Test 'watch_limit' failed: Verification failed" ${debug_makecheck}
-    [ $? -eq 0 ] && read -p "this failed test is acceptable..., press ENTER to continue"
-    sudo make install
-    [ $? -eq 0 ] && echo -e "\ninotify-tools successfuly installed !"
+  make_check_return=$?
+
+  if [ $make_check_return -eq 0 ]; then
+    # make check return no error
+    can_install=0
   else
-    echo "Something wrong during tests, passing installation... see ${debug_makecheck}"
-    echo "Here is the MALLOC_TRACE file : $MALLOC_TRACE"
+    # tests fail, checking for an acceptable error
+    grep -F "Test 'watch_limit' failed: Verification failed" ${debug_makecheck}
+    acceptable_error=$?
+
+    if [ $acceptable_error -eq 0 ]; then
+      read -p "this failed test is acceptable..., press ENTER to continue"
+      can_install=0
+    else
+      echo "Something wrong during tests, passing installation... see file '${debug_makecheck}'"
+      echo "Here is the MALLOC_TRACE file : $MALLOC_TRACE"
+      can_install=1
+    fi
   fi
+  # the "make install" under sudo to allow install with an alternative user than root
+  [ $can_install -eq 0 ] && sudo make install && echo -e "\ninotify-tools successfuly installed !"
 fi
 
-echo -e "\nreturn : $ret_make"
+echo -e "\nSome debug informations about build (0 = OK) :"
+echo -e "'make' return : $make_return"
+echo -e "'make check' return : $make_check_return"
+echo -e "has acceptable_error (watch_limit test) : $acceptable_error"
+echo -e "'make install' return : $can_install"
 
